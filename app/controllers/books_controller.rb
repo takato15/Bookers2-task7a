@@ -9,8 +9,10 @@ class BooksController < ApplicationController
 
   def index
     @book = Book.new
-    @books = Book.joins(:favorites).where(created_at: Time.current.all_week).group(:id).order("count(*) desc")
+    @books = Book.includes(:favorited_users).sort {|a,b| b.favorited_users.joins(:favorites).where(created_at: Time.current.all_week).size <=> a.favorited_users.joins(:favorites).where(created_at: Time.current.all_week).size
+      }
 
+    # Book.joins(:favorites).where(created_at: Time.current.all_week).group(:id).order("count_all desc")
     # Book.joins(:favorites).where(favorites: { created_at: 0.days.ago.prev_week..0.days.ago.prev_week(:sunday)}).group(:id).order("count(*) desc")
     # Book.joins(:favorites).where(favorites: { created_at: 0.days.ago.prev_week..0.days.ago.prev_week(:sunday)}).group(:id).order("count(*) desc")
     # Book.includes(:favorited_users).sort {|a,b| b.favorited_users.size <=> a.favorited_users.size}
